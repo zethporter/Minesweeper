@@ -1,35 +1,36 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { atom } from "jotai";
+
+import "./App.css";
+import Header from "./components/Header";
+import Board from "./components/Board";
+
+import { t_board } from "./utils/zod";
+
+export const boardAtom = atom<t_board>({
+  rows: 10,
+  cols: 10,
+});
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  // const [count, setCount] = useState(0)
+  // const changeColorOnClick = async () => {
+  //   const [tab] = await chrome.tabs.query({
+  //     active: true,
+  //     currentWindow: true,
+  //   });
+  //   chrome.scripting.executeScript({
+  //     target: { tabId: tab.id! },
+  //     func: () => {
+  //       document.body.style.backgroundColor = "green";
+  //     },
+  //   });
+  // };
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main className="w-full flex flex-col items-center gap-2 p-2 min-w-96">
+      <Header />
+      <Board />
+    </main>
+  );
 }
 
-export default App
+export default App;
