@@ -1,10 +1,18 @@
+import { t_row } from "../utils/zod";
 import Cell from "./Cell";
 
-const Row = ({ columns }: { columns: number }) => {
+const Row = ({
+  rowColumns,
+  rowId,
+}: {
+  rowColumns: t_row;
+  rowId: number;
+  // updateCell: (rowId: number, cellId: number, newCellInfo: t_cell) => void;
+}) => {
   return (
     <div className="flex">
-      {Array.from(Array(columns).keys()).map((key) => (
-        <Cell key={key} />
+      {rowColumns.map((cell, key) => (
+        <Cell key={key} cell={cell} rowId={rowId} colId={key} />
       ))}
     </div>
   );

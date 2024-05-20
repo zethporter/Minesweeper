@@ -4,12 +4,9 @@ import "./App.css";
 import Header from "./components/Header";
 import Board from "./components/Board";
 
-import { t_board } from "./utils/zod";
+import { t_gameMatrix } from "./utils/zod";
 
-export const boardAtom = atom<t_board>({
-  rows: 10,
-  cols: 10,
-});
+export const boardAtom = atom<t_gameMatrix>(null);
 
 function App() {
   // const [count, setCount] = useState(0)
