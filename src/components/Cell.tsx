@@ -16,6 +16,7 @@ const Cell = ({
   colId: number;
 }) => {
   const [board, setBoard] = useAtom(boardAtom);
+
   const updateBoard = (_rowId: number, _colId: number) => {
     const newBoard = board!.map((row, i) => {
       if (i === _rowId) {
@@ -33,9 +34,31 @@ const Cell = ({
     });
     setBoard(newBoard);
   };
+
+  const setFlag = (_rowId: number, _colId: number) => {
+    const newBoard = board!.map((row, i) => {
+      if (i === _rowId) {
+        return row.map((col, j) => {
+          if (j === _colId) {
+            return {
+              ...col,
+              hasFlag: !col.hasFlag,
+            };
+          }
+          return col;
+        });
+      }
+      return row;
+    });
+    setBoard(newBoard);
+  };
   return (
     <div
-      onClick={() => updateBoard(rowId, colId)}
+      onClick={() => (cell.hasFlag ? null : updateBoard(rowId, colId))}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        setFlag(rowId, colId);
+      }}
       className={twMerge(
         clsx(
           "h-6 w-6 border border-base-200 flex justify-center items-center",
@@ -46,7 +69,7 @@ const Cell = ({
         )
       )}
     >
-      {cell.hasFlag && <FlagIcon className="h-4 w-4 fill-primary" />}
+      {cell.hasFlag && <FlagIcon className="h-4 w-4 fill-error" />}
     </div>
   );
 };

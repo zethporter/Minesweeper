@@ -9,7 +9,16 @@ import { z_board } from "../utils/zod";
 const Header = () => {
   const setBoard = useSetAtom(boardAtom);
 
-  const buildBoard = (rows: number, cols: number) => {
+  const buildBoard = (rows: number, cols: number, bombs: number) => {
+    const bombsPositions: number[] = [];
+    const totalAvailablePositions = rows * cols;
+    while (bombsPositions.length < bombs) {
+      const newBomb = Math.floor(Math.random() * totalAvailablePositions);
+      if (!bombsPositions.includes(newBomb)) {
+        bombsPositions.push(newBomb);
+      }
+    }
+    let totalCount = 0;
     const newBoardMatrix = [];
     for (let r = 0; r < rows; r++) {
       const newRow = [];
@@ -17,10 +26,11 @@ const Header = () => {
         newRow.push({
           id: `${r}-${c}`,
           open: false,
-          isBomb: false,
+          isBomb: bombsPositions.includes(totalCount),
           hasFlag: false,
           bombsTouching: null,
         });
+        totalCount++;
       }
       newBoardMatrix.push(newRow);
     }
@@ -32,7 +42,7 @@ const Header = () => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    values: { rows: 10, cols: 10 },
+    values: { rows: 10, cols: 10, bombs: 15 },
     resolver: zodResolver(z_board),
   });
 
@@ -40,7 +50,9 @@ const Header = () => {
     <div className="w-full rounded-btn bg-base-200 p-1">
       <form
         className="flex flex-row justify-center gap-2"
-        onSubmit={handleSubmit((data) => buildBoard(data.rows, data.cols))}
+        onSubmit={handleSubmit((data) =>
+          buildBoard(data.rows, data.cols, data.bombs)
+        )}
       >
         <div className="flex flex-col gap-1">
           <label className="input input-sm input-bordered flex items-center gap-2">
@@ -63,6 +75,19 @@ const Header = () => {
           <ErrorMessage
             errors={errors}
             name="cols"
+            render={({ message }) => (
+              <span className="label-text-alt text-error">{message}</span>
+            )}
+          />
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="input input-sm input-bordered flex items-center gap-2">
+            Bombs
+            <input className="grow" type="number" {...register("bombs")} />
+          </label>
+          <ErrorMessage
+            errors={errors}
+            name="bombs"
             render={({ message }) => (
               <span className="label-text-alt text-error">{message}</span>
             )}

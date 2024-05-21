@@ -1,9 +1,18 @@
 import { z } from "zod";
 
-export const z_board = z.object({
-  rows: z.coerce.number().min(5).max(50),
-  cols: z.coerce.number().min(5).max(50),
-});
+export const z_board = z
+  .object({
+    rows: z.coerce.number().min(5).max(50),
+    cols: z.coerce.number().min(5).max(50),
+    bombs: z.coerce.number(),
+  })
+  .refine(
+    (data) => data.bombs <= data.rows * data.cols * 0.2,
+    (data) => ({
+      message: `Cannot have more than ${data.rows * data.cols * 0.2} bombs`,
+      path: ["bombs"],
+    })
+  );
 
 export type t_board = z.infer<typeof z_board>;
 
