@@ -2,9 +2,10 @@ import { useAtom } from "jotai";
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
 import { t_cell } from "../utils/zod";
-import { FlagIcon } from "@heroicons/react/16/solid";
+import { FlagIcon, FireIcon } from "@heroicons/react/16/solid";
 
 import { boardAtom } from "../App";
+import { updateBoard, setFlag } from "../utils/gameFunctions";
 
 const Cell = ({
   cell,
@@ -17,59 +18,34 @@ const Cell = ({
 }) => {
   const [board, setBoard] = useAtom(boardAtom);
 
-  const updateBoard = (_rowId: number, _colId: number) => {
-    const newBoard = board!.map((row, i) => {
-      if (i === _rowId) {
-        return row.map((col, j) => {
-          if (j === _colId) {
-            return {
-              ...col,
-              open: true,
-            };
-          }
-          return col;
-        });
-      }
-      return row;
-    });
-    setBoard(newBoard);
-  };
-
-  const setFlag = (_rowId: number, _colId: number) => {
-    const newBoard = board!.map((row, i) => {
-      if (i === _rowId) {
-        return row.map((col, j) => {
-          if (j === _colId) {
-            return {
-              ...col,
-              hasFlag: !col.hasFlag,
-            };
-          }
-          return col;
-        });
-      }
-      return row;
-    });
-    setBoard(newBoard);
-  };
   return (
     <div
-      onClick={() => (cell.hasFlag ? null : updateBoard(rowId, colId))}
+      onClick={() =>
+        cell.hasFlag ? null : setBoard(updateBoard(rowId, colId, board))
+      }
       onContextMenu={(e) => {
         e.preventDefault();
-        setFlag(rowId, colId);
+        setBoard(setFlag(rowId, colId, board));
       }}
       className={twMerge(
         clsx(
-          "h-6 w-6 border border-base-200 flex justify-center items-center",
-          cell.open
-            ? "bg-base-100"
-            : "bg-primary hover:bg-gradient-to-br from-accent to-primary",
-          cell.isBomb && "bg-error"
+          "btn btn-square btn-sm rounded-none btn-primary",
+          cell.open && "btn-disabled pointer-events-none",
+          cell.hasFlag && ""
         )
       )}
     >
-      {cell.hasFlag && <FlagIcon className="h-4 w-4 fill-error" />}
+      {cell.open ? (
+        cell.isBomb ? (
+          <FireIcon className="h-4 w-4 fill-yellow-400 stroke-orange-500" />
+        ) : (
+          <span className="text-base-content">{cell.bombsTouching}</span>
+        )
+      ) : cell.isBomb ? (
+        <FireIcon className="h-4 w-4 fill-yellow-400 stroke-orange-500" />
+      ) : cell.hasFlag ? (
+        <FlagIcon className="h-4 w-4 fill-error" />
+      ) : null}
     </div>
   );
 };
