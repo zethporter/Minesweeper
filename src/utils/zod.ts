@@ -30,6 +30,6 @@ export const z_row = z.array(z_cell);
 
 export type t_row = z.infer<typeof z_row>;
 
-export const z_gameMatrix = z.array(z_row).nullable();
+export const z_gameMatrix = z.array(z_row);
 
 export type t_gameMatrix = z.infer<typeof z_gameMatrix>;

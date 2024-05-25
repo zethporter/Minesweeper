@@ -71,34 +71,39 @@ function getSurroundingBombs(
   return count > 0 ? count : null;
 }
 
-// function editCell(_rowId: number, _colId: number, _board: t_gameMatrix) {
-//   const surroundingBombs = getSurroundingBombs(_rowId, _colId, _board);
-//   if (!surroundingBombs) {
-//     getSurroundingCells(_rowId, _colId, _board).forEach((cell) => {
-//       editCell(cell[0], cell[1], _board);
-//     });
-//   }
-//   // still need logic if bomb is clicked
-//   _board![_rowId][_colId].open = true;
-//   _board![_rowId][_colId].bombsTouching = surroundingBombs;
-// }
+function editCell(_rowId: number, _colId: number, _board: t_gameMatrix) {
+  if (_board[_rowId][_colId].open || _board[_rowId][_colId].isBomb) {
+    console.log("err Cell is already open", _board[_rowId][_colId]);
+    return _board; // stop if the cell is already open
+  }
+  const surroundingBombs = getSurroundingBombs(_rowId, _colId, _board);
+  if (!surroundingBombs) {
+    // getSurroundingCells(_rowId, _colId, _board).forEach((cell) => {
+    //   // _board = editCell(cell[0], cell[1], _board);
+    //   console.log("err", cell, cell[0], cell[1]);
+    // });
+    const surroundingCells = getSurroundingCells(_rowId, _colId, _board);
+    for (let i = 0; i < surroundingCells.length; i++) {
+      _board[_rowId][_colId].open = true;
+      _board[_rowId][_colId].bombsTouching = surroundingBombs;
+      _board = editCell(surroundingCells[i][0], surroundingCells[i][1], _board);
+    }
+  } else {
+    _board[_rowId][_colId].open = true;
+    _board[_rowId][_colId].bombsTouching = surroundingBombs;
+  }
+
+  return _board;
+}
 
 export function updateBoard(
   _rowId: number,
   _colId: number,
   _board: t_gameMatrix
 ) {
-  const tempBoard = _board!;
-  const surroundingBombs = getSurroundingBombs(_rowId, _colId, tempBoard);
-  // if (!surroundingBombs) {
-  //   getSurroundingCells(_rowId, _colId, tempBoard).forEach((cell) => {
-  //     editCell(cell[0], cell[1], tempBoard);
-  //   });
-  // }
-  // still need logic if bomb is clicked
-  tempBoard[_rowId][_colId].open = true;
-  tempBoard[_rowId][_colId].bombsTouching = surroundingBombs;
-  return tempBoard.map((row) => row.map((col) => col));
+  let tempBoard = _board ?? [];
+  tempBoard = editCell(_rowId, _colId, tempBoard); // use editCell function here
+  return tempBoard!.map((row) => row.map((col) => col));
 }
 
 export function setFlag(_rowId: number, _colId: number, _board: t_gameMatrix) {
